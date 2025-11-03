@@ -1,0 +1,31 @@
+{
+  "name": "tailsync-api",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/ovalkonia/tailsync-api#readme",
+  "bugs": {
+    "url": "https://github.com/ovalkonia/tailsync-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ovalkonia/tailsync-api.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --env-file ./.env ./index.js",
+    "start": "node --env-file ./.env ./index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.2"
+  }
+}
