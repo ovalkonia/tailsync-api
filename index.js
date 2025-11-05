@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import express from "express";
 import cookie_parser from "cookie-parser";
 
+import auth_router from "./routers/auth.router.js";
+
 import error_middleware from "./middlewares/error.middleware.js";
 
 await mongoose.connect("mongodb://127.0.0.1:27017/tailsync");
@@ -16,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookie_parser());
 
 // Routes
+
+app.use(auth_router);
 
 app.all("*any", (req, res) => {
     return res.send("Endpoint not found!");
