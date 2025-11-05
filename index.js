@@ -1,5 +1,8 @@
+import mongoose from "mongoose";
 import express from "express";
 import cookie_parser from "cookie-parser";
+
+await mongoose.connect("mongodb://127.0.0.1:27017/tailsync");
 
 const port = 8080;
 const app = express();
