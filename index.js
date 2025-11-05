@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import express from "express";
 import cookie_parser from "cookie-parser";
 
+import error_middleware from "./middlewares/error.middleware.js";
+
 await mongoose.connect("mongodb://127.0.0.1:27017/tailsync");
 
 const port = 8080;
@@ -18,6 +20,10 @@ app.use(cookie_parser());
 app.all("*any", (req, res) => {
     return res.send("Endpoint not found!");
 });
+
+// Error middleware
+
+app.use(error_middleware());
 
 // Listen
 
