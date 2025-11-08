@@ -1,12 +1,18 @@
+import ApiError from "../errors/Api.error";
+import BaseError from "../errors/Base.error";
+
 export default () => {
     return (err, req, res, next) => {
-        console.error("UNKNOWN ERROR:");
-        console.error(err);
+        const is_base_instance = err instanceof BaseError;
+        if (!is_base_instance) {
+            console.error("UNKNOWN ERROR:");
+            console.error(err);
+        }
 
-        return res.status(500).json({
-            status: "error",
-            message: "Internal Server Error!",
-        });
+        const base_error = is_base_instance ? err : ApiError.SERVER_ERROR;
+        const payload = base_error.toJSON();
+
+        return res.status(payload.code).json(payload);
     };
 };
 

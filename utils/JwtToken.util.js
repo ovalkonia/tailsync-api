@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export default class JwtToken {
+export default class JwtTokenUtil {
     static parse(token, secret) {
         return new this(jwt.verify(token, secret));
     }
@@ -19,4 +19,5 @@ export default class JwtToken {
                 .filter(([_, value]) => value !== undefined)
         );
     }
-}
+};
+

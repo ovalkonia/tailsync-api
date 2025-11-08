@@ -1,6 +1,6 @@
-import JwtToken from "./JwtToken.domain.js";
+import JwtTokenUtil from "./JwtToken.util.js";
 
-export default class AccessToken extends JwtToken {
+export default class AccessTokenUtil extends JwtTokenUtil {
     constructor({
         user_id,
         user_role,
@@ -35,4 +35,5 @@ export default class AccessToken extends JwtToken {
     is_valid() {
         return this.absolute_exp.getTime() > Date.now();
     }
-}
+};
+

@@ -1,6 +1,6 @@
 import UserModel from "../models/User.model.js";
-import RefreshToken from "../lib/domain/RefreshToken.domain.js";
-import AccessToken from "../lib/domain/AccessToken.domain.js";
+import AccessTokenUtil from "../utils/AccessToken.util.js";
+import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 
 export default {
     post_register: async (req, res) => {

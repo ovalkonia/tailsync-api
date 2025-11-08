@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 
-import JwtToken from "./JwtToken.domain.js";
+import JwtTokenUtil from "./JwtToken.util.js";
 
-export default class RefreshToken extends JwtToken {
+export default class RefreshTokenUtil extends JwtTokenUtil {
     constructor({
         id,
         user_id,
@@ -67,4 +67,5 @@ export default class RefreshToken extends JwtToken {
         return this.sliding_exp.getTime() > Date.now() &&
                this.absolute_exp.getTime() > Date.now();
     }
-}
+};
+
