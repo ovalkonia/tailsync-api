@@ -1,5 +1,5 @@
-import ApiError from "../errors/Api.error";
-import BaseError from "../errors/Base.error";
+import ApiError from "../errors/Api.error.js";
+import BaseError from "../errors/Base.error.js";
 
 export default () => {
     return (err, req, res, next) => {
