@@ -5,7 +5,7 @@ export default new Schema({
         type: Schema.Types.String,
         required: true,
     },
-    user_id: {
+    user: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
@@ -23,7 +23,6 @@ export default new Schema({
         required: true,
     },
 }, {
-    _id: false,
     versionKey: false,
     timestamps: {
         createdAt: "created_at",

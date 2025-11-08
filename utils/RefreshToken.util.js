@@ -5,15 +5,15 @@ import JwtTokenUtil from "./JwtToken.util.js";
 export default class RefreshTokenUtil extends JwtTokenUtil {
     constructor({
         jti,
-        user_id,
+        user,
         issued_at,
         sliding_exp,
         absolute_exp,
     }) {
         super();
 
-        this.jti = jti;
-        this.user_id = user_id;
+        this.jti = String(jti);
+        this.user = String(user);
         this.issued_at = new Date(issued_at);
         this.sliding_exp = new Date(sliding_exp);
         this.absolute_exp = new Date(absolute_exp);
@@ -27,10 +27,10 @@ export default class RefreshTokenUtil extends JwtTokenUtil {
         return super.sign(data, process.env.JWT_REFRESH_SECRET);
     }
 
-    static issue(user_id) {
+    static issue(user) {
         return new this({
             jti: uuidv4(),
-            user_id: user_id,
+            user: user,
             issued_at: Date.now(),
             sliding_exp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days from now
             absolute_exp: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 days from now
@@ -40,7 +40,7 @@ export default class RefreshTokenUtil extends JwtTokenUtil {
     static rotate(refresh_token) {
         return new this({
             jti: uuidv4(),
-            user_id: refresh_token.user_id,
+            user: refresh_token.user,
             issued_at: refresh_token.issued_at,
             sliding_exp: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days from now
             absolute_exp: refresh_token.absolute_exp,
@@ -53,7 +53,7 @@ export default class RefreshTokenUtil extends JwtTokenUtil {
 
     static equal(lhs, rhs) {
         return lhs.jti === rhs.jti &&
-               lhs.user_id === rhs.user_id &&
+               lhs.user === rhs.user &&
                lhs.issued_at.getTime() === rhs.issued_at.getTime() &&
                lhs.sliding_exp.getTime() === rhs.sliding_exp.getTime() &&
                lhs.absolute_exp.getTime() === rhs.absolute_exp.getTime();

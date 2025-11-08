@@ -9,8 +9,8 @@ export default class AccessTokenUtil extends JwtTokenUtil {
     }) {
         super();
 
-        this.user_id = user_id;
-        this.user_role = user_role;
+        this.user_id = String(user_id);
+        this.user_role = String(user_role);
         this.issued_at = new Date(issued_at);
         this.absolute_exp = new Date(absolute_exp);
     }
