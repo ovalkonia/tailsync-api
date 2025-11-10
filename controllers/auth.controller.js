@@ -6,6 +6,9 @@ import AccessTokenUtil from "../utils/AccessToken.util.js";
 import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 
 export default {
+    get_me: async (req, res) => {
+
+    },
     post_register: async (req, res) => {
         const user_model = new UserModel(req.body);
         await user_model.save();
@@ -86,6 +89,15 @@ export default {
             status: "success",
             message: "Successfully logged out!",
         });
+    },
+    post_password_reset: async (req, res) => {
+
+    },
+    post_password_reset_token: async (req, res) => {
+
+    },
+    post_email_confirm_token: async (req, res) => {
+
     },
 };
 
