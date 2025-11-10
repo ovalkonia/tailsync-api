@@ -6,7 +6,7 @@ import error_middleware from "./middlewares/error.middleware.js";
 
 import auth_router from "./routers/auth.router.js";
 
-await mongoose.connect("mongodb://127.0.0.1:27017/tailsync");
+await mongoose.connect(process.env.MONGODB_URI);
 
 const port = 8080;
 const app = express();
@@ -20,6 +20,10 @@ app.use(cookie_parser());
 // Routes
 
 app.use(auth_router);
+
+app.get("/ping", (req, res) =>{
+    return res.send("pong");
+})
 
 app.all("*any", (req, res) => {
     return res.send("Endpoint not found!");
