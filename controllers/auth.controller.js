@@ -19,7 +19,7 @@ export default {
         const user_document = await UserModel.findOne({ email: req.body.email }).exec();
         if (!user_document ||
             user_document.password !== req.body.password) {
-            throw UserError.WRONG_CREDENTIALS;
+            throw UserError.WRONG_CREDENTIALS();
         }
 
         const refresh_token_util = RefreshTokenUtil.issue(user_document.id);
@@ -43,17 +43,17 @@ export default {
     post_refresh: async (req, res) => {
         const user_refresh_token_util = RefreshTokenUtil.parse(req.cookies.refresh_token);
         if (!user_refresh_token_util.is_valid()) {
-            throw ApiError.UNAUTHORIZED;
+            throw ApiError.UNAUTHORIZED();
         }
 
         const db_refresh_token_document = await RefreshTokenModel.findOne({ jti: user_refresh_token_util.jti }).exec();
         if (!db_refresh_token_document) {
-            throw ApiError.UNAUTHORIZED;
+            throw ApiError.UNAUTHORIZED();
         }
 
         const db_refresh_token_util = new RefreshTokenUtil(db_refresh_token_document.toJSON());
         if (!RefreshTokenUtil.equal(user_refresh_token_util, db_refresh_token_util)) {
-            throw ApiError.UNAUTHORIZED;
+            throw ApiError.UNAUTHORIZED();
         }
 
         await db_refresh_token_document.populate("user");
