@@ -5,7 +5,7 @@ services:
       - '8080:8080'
     environment:
       - URL_BACKEND=http://localhost:8080
-      - URL_FRONTEND=http://localhost:3000
+      - URL_FRONTEND=http://localhost:5173
       - MONGODB_URI=mongodb://mongodb:27017/tailsync
     depends_on:
       mongodb:
