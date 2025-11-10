@@ -2,29 +2,28 @@ import { Schema } from "mongoose";
 
 export default new Schema({
     email: {
-        type: String,
+        type: Schema.Types.String,
         required: true,
         index: true,
         unique: true,
         trim: true,
     },
     password: {
-        type: String,
+        type: Schema.Types.String,
         required: true,
     },
     name: {
-        type: String,
-        required: false,
+        type: Schema.Types.String,
         default: "",
         trim: true,
     },
     avatar: {
-        type: String,
+        type: Schema.Types.String,
         default: "",
         trim: true,
     },
     role: {
-        type: String,
+        type: Schema.Types.String,
         default: "user",
         enum: ["user", "admin"],
     },

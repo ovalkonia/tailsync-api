@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import express from "express";
 import cookie_parser from "cookie-parser";
-
-import auth_router from "./routers/auth.router.js";
+import express from "express";
+import mongoose from "mongoose";
 
 import error_middleware from "./middlewares/error.middleware.js";
+
+import auth_router from "./routers/auth.router.js";
 
 await mongoose.connect(process.env.MONGODB_URI);
 
