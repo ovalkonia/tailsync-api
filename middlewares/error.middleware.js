@@ -9,7 +9,7 @@ export default () => {
             console.error(err);
         }
 
-        const base_error = is_base_instance ? err : ApiError.SERVER_ERROR;
+        const base_error = is_base_instance ? err : ApiError.SERVER_ERROR();
         const payload = base_error.toJSON();
 
         return res.status(payload.code).json(payload);
