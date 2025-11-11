@@ -7,7 +7,21 @@ import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 
 export default {
     get_me: async (req, res) => {
+        const myself = {
+            id: req.user._id,
+            email: req.user.email,
+            name: req.user.name,
+            avatar: req.user.avatar,
+            role: req.user.role,
+        };
 
+        return res.json({
+            status: "success",
+            message: "Successfully got myself!",
+            data: {
+                me: myself,
+            },
+        });
     },
     post_register: async (req, res) => {
         const user_model = new UserModel(req.body);
