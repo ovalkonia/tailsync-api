@@ -1,12 +1,14 @@
 import express from "express";
 
+import auth_middleware from "../middlewares/auth.middleware.js";
+
 import auth_controller from "../controllers/auth.controller.js";
 
 const auth_router = express.Router();
 
 // GET
 
-auth_router.get("/auth/me", auth_controller.get_me);
+auth_router.get("/auth/me", auth_middleware(), auth_controller.get_me);
 
 // POST
 

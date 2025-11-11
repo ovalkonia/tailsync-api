@@ -6,7 +6,7 @@ services:
     environment:
       - URL_BACKEND=${URL_BACKEND}
       - URL_FRONTEND=${URL_FRONTEND}
-      - MONGODB_URI=mongodb://mongodb:27017/tailsync
+      - MONGODB_URI=${URI_MONGODB}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
     depends_on:
