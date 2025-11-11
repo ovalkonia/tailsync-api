@@ -1,10 +1,12 @@
 import { Resend } from "resend";
 import ApiError from "../errors/Api.error.js";
 import UserError from "../errors/User.error.js";
+import PasswordResetTokenModel from "../models/PasswordResetToken.model.js";
 import RefreshTokenModel from "../models/RefreshToken.model.js";
 import UserModel from "../models/User.model.js";
 import AccessTokenUtil from "../utils/AccessToken.util.js";
 import EmailConfirmTokenUtil from "../utils/EmailConfirmToken.util.js";
+import PasswordResetTokenUtil from "../utils/PasswordResetToken.util.js";
 import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 
 export default {
@@ -107,10 +109,52 @@ export default {
         });
     },
     post_password_reset: async (req, res) => {
+        const user_document = await UserModel.findOne({ email: req.body.email });
+        if (!user_document) {
+            throw ApiError.NOT_FOUND();
+        }
 
+        const password_reset_token_util = PasswordResetTokenUtil.issue(user_document.id);
+        const password_reset_token = password_reset_token_util.sign();
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: process.env.RESEND_FROM,
+            to: user_document.email,
+            subject: "Password Reset",
+            html: `Reset your password <a href="${[process.env.URL_FRONTEND]}/auth/password-reset/${password_reset_token}">here</a>`,
+        });
+
+        await PasswordResetTokenModel.create(password_reset_token_util.toJSON());
+
+        return res.json({
+            status: "success",
+            message: "Successfully sent the password reset letter!",
+        });
     },
     post_password_reset_token: async (req, res) => {
+        const password_reset_token_util = PasswordResetTokenUtil.parse(req.params.token);
+        if (!password_reset_token_util.is_valid()) {
+            throw ApiError.UNAUTHORIZED();
+        }
 
+        const db_password_reset_token_document = await PasswordResetTokenModel.findOne({ jti: password_reset_token_util.jti }).exec();
+        if (!db_password_reset_token_document) {
+            throw ApiError.UNAUTHORIZED();
+        }
+
+        const db_password_reset_token_util = new PasswordResetTokenUtil(db_password_reset_token_document.toJSON());
+        if (!PasswordResetTokenUtil.equal(password_reset_token_util, db_password_reset_token_util)) {
+            throw ApiError.UNAUTHORIZED();
+        }
+
+        await UserModel.findByIdAndUpdate(db_password_reset_token_util.user_id, { password: req.body.password });
+        await PasswordResetTokenModel.deleteOne({ jti: db_password_reset_token_util.jti });
+
+        return res.json({
+            status: "success",
+            message: "Successfully reset the password!",
+        });
     },
     post_email_confirm: async (req, res) => {
         const email_confirm_token_util = EmailConfirmTokenUtil.issue(req.user._id, req.user.email);
@@ -132,9 +176,9 @@ export default {
     post_email_confirm_token: async (req, res) => {
         const email_confirm_token_util = EmailConfirmTokenUtil.parse(req.params.token);
         if (!email_confirm_token_util.is_valid() ||
-            email_confirm_token_util.user_id != req.user._id ||
+            email_confirm_token_util.user_id !== req.user._id ||
             email_confirm_token_util.email !== req.user.email) {
-            throw ApiError.UNAUTHORIZED;
+            throw ApiError.UNAUTHORIZED();
         }
 
         // TODO set verified in the db
