@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+
 import ApiError from "../errors/Api.error.js";
 import UserError from "../errors/User.error.js";
 import PasswordResetTokenModel from "../models/PasswordResetToken.model.js";
