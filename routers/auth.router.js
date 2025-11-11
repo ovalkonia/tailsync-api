@@ -18,7 +18,8 @@ auth_router.post("/auth/refresh", auth_controller.post_refresh);
 auth_router.post("/auth/logout", auth_controller.post_logout);
 auth_router.post("/auth/password-reset", auth_controller.post_password_reset);
 auth_router.post("/auth/password-reset/:token", auth_controller.post_password_reset_token);
-auth_router.post("/auth/email-confirm/:token", auth_controller.post_email_confirm_token);
+auth_router.post("/auth/email-confirm", auth_middleware(), auth_controller.post_email_confirm);
+auth_router.post("/auth/email-confirm/:token", auth_middleware(), auth_controller.post_email_confirm_token);
 
 export default auth_router;
 

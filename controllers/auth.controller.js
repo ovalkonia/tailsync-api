@@ -1,8 +1,10 @@
+import { Resend } from "resend";
 import ApiError from "../errors/Api.error.js";
 import UserError from "../errors/User.error.js";
 import RefreshTokenModel from "../models/RefreshToken.model.js";
 import UserModel from "../models/User.model.js";
 import AccessTokenUtil from "../utils/AccessToken.util.js";
+import EmailConfirmTokenUtil from "../utils/EmailConfirmToken.util.js";
 import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 
 export default {
@@ -110,8 +112,37 @@ export default {
     post_password_reset_token: async (req, res) => {
 
     },
-    post_email_confirm_token: async (req, res) => {
+    post_email_confirm: async (req, res) => {
+        const email_confirm_token_util = EmailConfirmTokenUtil.issue(req.user._id, req.user.email);
+        const email_confirm_token = email_confirm_token_util.sign();
 
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: process.env.RESEND_FROM,
+            to: req.user.email,
+            subject: "Email Confirmation",
+            html: `Confirm your email <a href="${[process.env.URL_FRONTEND]}/auth/email-confirm/${email_confirm_token}">here</a>`,
+        });
+
+        return res.json({
+            status: "success",
+            message: "Successfully sent the email confirmation letter!",
+        });
+    },
+    post_email_confirm_token: async (req, res) => {
+        const email_confirm_token_util = EmailConfirmTokenUtil.parse(req.params.token);
+        if (!email_confirm_token_util.is_valid() ||
+            email_confirm_token_util.user_id != req.user._id ||
+            email_confirm_token_util.email !== req.user.email) {
+            throw ApiError.UNAUTHORIZED;
+        }
+
+        // TODO set verified in the db
+
+        return res.json({
+            status: "success",
+            message: "Successfully confirmed the email!",
+        });
     },
 };
 
