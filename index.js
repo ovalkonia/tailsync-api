@@ -6,7 +6,7 @@ import error_middleware from "./middlewares/error.middleware.js";
 
 import auth_router from "./routers/auth.router.js";
 
-await mongoose.connect(process.env.MONGODB_URI);
+await mongoose.connect(process.env.URI_MONGODB);
 
 const port = 8080;
 const app = express();

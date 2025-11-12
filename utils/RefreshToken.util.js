@@ -20,11 +20,11 @@ export default class RefreshTokenUtil extends JwtTokenUtil {
     }
 
     static parse(token) {
-        return super.parse(token, process.env.JWT_REFRESH_SECRET);
+        return super.parse(token, process.env.JWT_REFRESH_TOKEN_SECRET);
     }
 
     static sign(data) {
-        return super.sign(data, process.env.JWT_REFRESH_SECRET);
+        return super.sign(data, process.env.JWT_REFRESH_TOKEN_SECRET);
     }
 
     static issue(user) {
