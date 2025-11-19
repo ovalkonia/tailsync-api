@@ -1,16 +1,15 @@
 import UserError from "../errors/User.error.js";
+import UserModel from "../models/User.model.js";
 
 export default {
     patch_password_change: async (req, res) => {
         const { old_password, new_password } = req.body;
-        const user = req.user;
 
-        if (user.password !== old_password) {
+        if (req.user.password !== old_password) {
             throw UserError.INCORRECT_PASSWORD();
         }
 
-        user.password = new_password;
-        await user.save();
+        await UserModel.findByIdAndUpdate(req.user._id, { password: new_password });
 
         return res.json({
             status: "success",
@@ -20,16 +19,14 @@ export default {
 
     patch_name_change: async (req, res) => {
         const { name } = req.body;
-        const user = req.user;
 
-        user.name = name;
-        await user.save();
+        await UserModel.findByIdAndUpdate(req.user._id, { name });
 
         return res.json({
             status: "success",
             message: "Name updated successfully",
             data: {
-                name: user.name
+                name
             }
         });
     }
