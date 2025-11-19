@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import error_middleware from "./middlewares/error.middleware.js";
 
 import auth_router from "./routers/auth.router.js";
+import user_router from "./routers/user.router.js";
 
 await mongoose.connect(process.env.URI_MONGODB);
 
@@ -32,6 +33,7 @@ app.use(cookie_parser());
 // Routes
 
 app.use(auth_router);
+app.use(user_router);
 
 app.get("/ping", (req, res) =>{
     return res.send("pong");
