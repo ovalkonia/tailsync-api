@@ -18,6 +18,7 @@ export default {
             name: req.user.name,
             avatar: req.user.avatar,
             role: req.user.role,
+            verified: req.user.verified,
         };
 
         return res.json({
@@ -182,7 +183,7 @@ export default {
             throw ApiError.UNAUTHORIZED();
         }
 
-        // TODO set verified in the db
+        await UserModel.findByIdAndUpdate(email_confirm_token_util.user_id, { verified: true });
 
         return res.json({
             status: "success",

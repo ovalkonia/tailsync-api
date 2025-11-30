@@ -19,13 +19,17 @@ export default new Schema({
     },
     avatar: {
         type: Schema.Types.String,
-        default: "",
+        default: "/uploads/avatars/default-avatar.jpg",
         trim: true,
     },
     role: {
         type: Schema.Types.String,
         default: "user",
         enum: ["user", "admin"],
+    },
+    verified: {
+        type: Schema.Types.Boolean,
+        default: false,
     },
 }, {
     versionKey: false,
