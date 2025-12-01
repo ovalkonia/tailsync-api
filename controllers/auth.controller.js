@@ -41,7 +41,7 @@ export default {
     post_login: async (req, res) => {
         const user_document = await UserModel.findOne({ email: req.body.email }).exec();
         if (!user_document ||
-            user_document.password !== req.body.password) {
+            !await user_document.compare_password(req.body.password)) {
             throw UserError.WRONG_CREDENTIALS();
         }
 
