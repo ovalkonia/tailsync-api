@@ -18,6 +18,7 @@ export default {
             name: req.user.name,
             avatar: req.user.avatar,
             role: req.user.role,
+            verified: req.user.verified,
         };
 
         return res.json({
@@ -40,7 +41,7 @@ export default {
     post_login: async (req, res) => {
         const user_document = await UserModel.findOne({ email: req.body.email }).exec();
         if (!user_document ||
-            user_document.password !== req.body.password) {
+            !await user_document.compare_password(req.body.password)) {
             throw UserError.WRONG_CREDENTIALS();
         }
 
@@ -182,7 +183,7 @@ export default {
             throw ApiError.UNAUTHORIZED();
         }
 
-        // TODO set verified in the db
+        await UserModel.findByIdAndUpdate(email_confirm_token_util.user_id, { verified: true });
 
         return res.json({
             status: "success",
