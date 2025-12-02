@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export default new Schema({
+const PasswordResetTokenSchema = new Schema({
     jti: {
         type: Schema.Types.String,
         required: true,
@@ -25,4 +25,6 @@ export default new Schema({
         updatedAt: "updated_at",
     },
 });
+
+export default PasswordResetTokenSchema;
 
