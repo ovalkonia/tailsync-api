@@ -49,11 +49,37 @@ UserSchema.pre("save", async function (next) {
 
     try {
         this.password = await bcrypt.hash(this.password, 12);
-        next();
+        return next();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
+
+UserSchema.pre(["updateOne", "updateMany", "findOneAndUpdate"], async function (next) {
+        const update = this.getUpdate();
+        const password = update.password || update.$set?.password;
+        if (!password) {
+            return next();
+        }
+
+        try {
+            const hashed = await bcrypt.hash(password, 12);
+            if (update.password) {
+                update.password = hashed;
+            }
+
+            if (update.$set?.password) {
+                update.$set.password = hashed;
+            }
+
+            this.setUpdate(update);
+
+            return next();
+        } catch (error) {
+            return next(error);
+        }
+    }
+);
 
 // Instance methods
 
