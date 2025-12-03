@@ -24,7 +24,7 @@ export default {
         });
     },
     patch_user: async (req, res) => {
-        const result = await UserModel.findByIdAndUpdate(req.user._id, req.body);
+        await UserModel.findByIdAndUpdate(req.user._id, req.body);
 
         return res.json({
             status: "success",

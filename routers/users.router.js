@@ -20,7 +20,7 @@ users_router.patch("/users/name", auth_middleware(), users_controller.patch_user
 users_router.patch("/users/avatar", auth_middleware(), upload_middleware("avatars", "avatar"), (req, res, next) => {
     if (req.file) {
         req.body = {
-            avatar: req.file.path.slice(7),
+            avatar: req.file.path.slice(6),
         };
     }
 
