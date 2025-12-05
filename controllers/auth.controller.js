@@ -13,7 +13,7 @@ import RefreshTokenUtil from "../utils/RefreshToken.util.js";
 export default {
     get_me: async (req, res) => {
         const myself = {
-            id: req.user._id,
+            id: req.user.id,
             email: req.user.email,
             name: req.user.name,
             avatar: req.user.avatar,
@@ -30,8 +30,7 @@ export default {
         });
     },
     post_register: async (req, res) => {
-        const user_model = new UserModel(req.body);
-        await user_model.save();
+        await UserModel.create(req.body);
 
         return res.json({
             status: "success",
@@ -159,7 +158,7 @@ export default {
         });
     },
     post_email_confirm: async (req, res) => {
-        const email_confirm_token_util = EmailConfirmTokenUtil.issue(req.user._id, req.user.email);
+        const email_confirm_token_util = EmailConfirmTokenUtil.issue(req.user.id, req.user.email);
         const email_confirm_token = email_confirm_token_util.sign();
 
         const resend = new Resend(process.env.RESEND_API_KEY);
@@ -178,7 +177,7 @@ export default {
     post_email_confirm_token: async (req, res) => {
         const email_confirm_token_util = EmailConfirmTokenUtil.parse(req.params.token);
         if (!email_confirm_token_util.is_valid() ||
-            email_confirm_token_util.user_id !== req.user._id ||
+            email_confirm_token_util.user_id !== req.user.id ||
             email_confirm_token_util.email !== req.user.email) {
             throw ApiError.UNAUTHORIZED();
         }

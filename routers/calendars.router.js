@@ -1,0 +1,28 @@
+import express from "express";
+
+import auth_middleware from "../middlewares/auth.middleware.js";
+import calendar_fetch_middleware from "../middlewares/calendar_fetch.middleware.js";
+
+import calendars_controller from "../controllers/calendars.controller.js";
+
+const calendars_router = express.Router();
+
+// GET
+
+calendars_router.get("/calendars", auth_middleware(), calendars_controller.get_calendars);
+calendars_router.get("/calendars/:calendar_id", auth_middleware(), calendar_fetch_middleware(), calendars_controller.get_calendar);
+
+// POST
+
+calendars_router.post("/calendars", auth_middleware(), calendars_controller.post_calendar);
+
+// PATCH
+
+calendars_router.patch("/calendars/:calendar_id", calendar_fetch_middleware(), auth_middleware(), calendars_controller.patch_calendar);
+
+// DELETE
+
+calendars_router.delete("/calendars/:calendar_id", calendar_fetch_middleware(), auth_middleware(), calendars_controller.delete_calendar);
+
+export default calendars_router;
+

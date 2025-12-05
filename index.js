@@ -6,6 +6,9 @@ import error_middleware from "./middlewares/error.middleware.js";
 
 import auth_router from "./routers/auth.router.js";
 import users_router from "./routers/users.router.js";
+import calendars_router from "./routers/calendars.router.js";
+
+import ApiError from "./errors/Api.error.js";
 
 await mongoose.connect(process.env.URI_MONGODB);
 
@@ -35,13 +38,14 @@ app.use(cookie_parser());
 
 app.use(auth_router);
 app.use(users_router);
+app.use(calendars_router);
 
 app.get("/ping", (req, res) =>{
     return res.send("pong");
 })
 
 app.all("*any", (req, res) => {
-    return res.send("Endpoint not found!");
+    throw ApiError.NOT_FOUND();
 });
 
 // Error middleware

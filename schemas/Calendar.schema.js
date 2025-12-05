@@ -21,6 +21,11 @@ const CalendarSchema = new Schema({
         default: "#186325",
         trim: true,
     },
+    type: {
+        type: Schema.Types.String,
+        enum: ["main", "custom"],
+        default: "custom",
+    },
 }, {
     versionKey: false,
     timestamps: {
@@ -28,6 +33,17 @@ const CalendarSchema = new Schema({
         updatedAt: "updated_at",
     },
 });
+
+// Instance methods
+
+CalendarSchema.methods.toClient = function () {
+    const client = this.toJSON();
+
+    client.id = client._id;
+    delete client._id;
+
+    return client;
+};
 
 export default CalendarSchema;
 

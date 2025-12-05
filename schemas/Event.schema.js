@@ -42,5 +42,16 @@ const EventSchema = new Schema({
     },
 });
 
+// Instance methods
+
+EventSchema.methods.toClient = function () {
+    const client = this.toJSON();
+
+    client.id = client._id;
+    delete client._id;
+
+    return client;
+};
+
 export default EventSchema;
 
