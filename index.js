@@ -7,6 +7,7 @@ import error_middleware from "./middlewares/error.middleware.js";
 import auth_router from "./routers/auth.router.js";
 import users_router from "./routers/users.router.js";
 import calendars_router from "./routers/calendars.router.js";
+import event_router from "./routers/events.router.js";
 
 import ApiError from "./errors/Api.error.js";
 
@@ -39,6 +40,7 @@ app.use(cookie_parser());
 app.use(auth_router);
 app.use(users_router);
 app.use(calendars_router);
+app.use(event_router);
 
 app.get("/ping", (req, res) =>{
     return res.send("pong");

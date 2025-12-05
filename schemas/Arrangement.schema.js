@@ -6,8 +6,9 @@ const ArrangementSchema = new Schema({
         required: true,
     },
     location: {
-        type: Schema.Types.Date,
+        type: Schema.Types.String,
         required: true,
+        trim: true,
     },
 });
 
