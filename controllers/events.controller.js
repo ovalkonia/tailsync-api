@@ -35,7 +35,14 @@ export default {
         });
     },
     patch_event: async (req, res) => {
-        await EventModel.findByIdAndUpdate(req.event.id, req.body);
+        let model;
+        switch (req.body.type) {
+            case "arrangement": model = ArrangementModel; break;
+            case "reminder": model = ReminderModel; break;
+            case "task": model = TaskModel; break;
+        }
+
+        await model.findByIdAndUpdate(req.event.id, req.body);
 
         return res.json({
             status: "success",
