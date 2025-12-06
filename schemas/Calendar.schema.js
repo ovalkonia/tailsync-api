@@ -18,7 +18,7 @@ const CalendarSchema = new Schema({
     },
     color: {
         type: Schema.Types.String,
-        default: "#186325",
+        default: "#1c71d8",
         trim: true,
     },
     type: {
