@@ -11,8 +11,8 @@ const calendars_router = express.Router();
 
 calendars_router.get("/calendars", auth_middleware(), calendars_controller.get_calendars);
 calendars_router.get("/calendars/:calendar_id", auth_middleware(), calendar_fetch_middleware(), calendars_controller.get_calendar);
-calendars_router.get("/calendars/holidays/events/all/:year/:month", auth_middleware(), calendars_controller.get_holidays_events);
-calendars_router.get("/calendars/:calendar_id/events/all/:year/:month", auth_middleware(), calendar_fetch_middleware(), calendars_controller.get_calendar_events);
+calendars_router.get("/calendars/holidays/events/all/:year", auth_middleware(), calendars_controller.get_holidays_events);
+calendars_router.get("/calendars/:calendar_id/events/all/:year", auth_middleware(), calendar_fetch_middleware(), calendars_controller.get_calendar_events);
 
 // POST
 
