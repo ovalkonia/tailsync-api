@@ -2,6 +2,7 @@ import { Resend } from "resend";
 
 import ApiError from "../errors/Api.error.js";
 import UserError from "../errors/User.error.js";
+import CalendarModel from "../models/Calendar.model.js";
 import PasswordResetTokenModel from "../models/PasswordResetToken.model.js";
 import RefreshTokenModel from "../models/RefreshToken.model.js";
 import UserModel from "../models/User.model.js";
@@ -30,7 +31,13 @@ export default {
         });
     },
     post_register: async (req, res) => {
-        await UserModel.create(req.body);
+        const user_document = await UserModel.create(req.body);
+        await CalendarModel.create({
+            owner: user_document.id,
+            title: user_document.name,
+            desciption: "Main user calendar",
+            type: "main",
+        });
 
         return res.json({
             status: "success",
