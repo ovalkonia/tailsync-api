@@ -34,24 +34,21 @@ export default {
     },
     get_holidays_events: async (req, res) => {
         const year = req.params.year;
-        const month = req.params.month;
 
         const nager_date_response = await fetch(`https://date.nager.at/api/v3/publicholidays/${year}/UA`);
         const nager_date_data = await nager_date_response.json();
-        const events = nager_date_data
-            .filter(holiday => new Date(holiday.date).getMonth() === month - 1)
-            .map(holiday => ({
-                id: "",
-                owner: req.user.id,
-                calendar: "holidays",
-                title: holiday.name,
-                description: "A holiday, you know, chill",
-                start: holiday.date,
-                rrule: "",
-                color: "#2ec27e",
-                type: "Holiday",
-                categories: holiday.types,
-            }));
+        const events = nager_date_data.map(holiday => ({
+            id: "",
+            owner: req.user.id,
+            calendar: "holidays",
+            title: holiday.name,
+            description: "A holiday, you know, chill",
+            start: holiday.date,
+            rrule: "",
+            color: "#2ec27e",
+            type: "Holiday",
+            categories: holiday.types,
+        }));
 
         return res.json({
             status: "success",
