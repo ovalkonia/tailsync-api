@@ -1,9 +1,26 @@
+import { Resend } from "resend";
+import ApiError from "../errors/Api.error.js";
+import CalendarError from "../errors/Calendar.error.js";
 import CalendarModel from "../models/Calendar.model.js";
 import EventModel from "../models/Event.model.js";
+import CalendarJoinTokenUtil from "../utils/CalendarJoinToken.util.js";
 
 export default {
     get_calendars: async (req, res) => {
-        const calendar_documents = (await CalendarModel.find({ owner: req.user.id })).map(calendar => calendar.toClient());
+        const calendar_documents = (await CalendarModel
+            .find({
+                $or: [
+                    { owner: req.user.id },
+                    {
+                        members: {
+                            $elemMatch: {
+                                user: req.user.id,
+                            },
+                        },
+                    },
+                ],
+            }))
+            .map(calendar => calendar.toClient());
         calendar_documents.push({
             id: "holidays",
             owner: req.user.id,
@@ -58,7 +75,9 @@ export default {
         });
     },
     get_calendar_events: async (req, res) => {
-        const event_documents = await EventModel.find({ owner: req.user.id, calendar: req.calendar.id });
+        const event_documents = await EventModel.find({
+            calendar: req.calendar.id,
+        });
         const events = event_documents.map(event_document => event_document.toClient());
 
         return res.json({
@@ -78,6 +97,47 @@ export default {
         return res.json({
             status: "success",
             message: "Successfully posted the calendar!",
+        });
+    },
+    post_calendar_share: async (req, res) => {
+        const calendar_join_token_util = CalendarJoinTokenUtil.issue(req.user.id, req.calendar.id);
+        const calendar_join_token = calendar_join_token_util.sign();
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: process.env.RESEND_FROM,
+            to: req.body.email,
+            subject: "Join My Calendar!",
+            html: `Join <strong>${req.user.name}'s</strong> Calendar <strong>${req.calendar.title}</strong> <a href="${[process.env.URL_FRONTEND]}/calendars/join/${calendar_join_token}">here</a>`,
+        });
+
+        return res.json({
+            status: "success",
+            message: "Successfully sent the invitation letter!",
+        });
+    },
+    post_calendar_join: async (req, res) => {
+        const calendar_join_token_util = CalendarJoinTokenUtil.parse(req.params.token);
+        const calendar_document = await CalendarModel.findById(calendar_join_token_util.calendar_id);
+        if (!calendar_document) {
+            throw CalendarError.DOESNT_EXIST();
+        }
+
+        req.calendar = calendar_document.toClient();
+        if (!calendar_join_token_util.is_valid() ||
+            req.user.id.equals(req.calendar.owner)) {
+            throw ApiError.UNAUTHORIZED();
+        }
+
+        await CalendarModel.findByIdAndUpdate(req.calendar.id, {
+            $push: {
+                members: { user: req.user.id },
+            },
+        });
+
+        return res.json({
+            status: "success",
+            message: "Successfully joined the calendar",
         });
     },
     patch_calendar: async (req, res) => {

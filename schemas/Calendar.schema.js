@@ -26,6 +26,17 @@ const CalendarSchema = new Schema({
         enum: ["main", "custom"],
         default: "custom",
     },
+    members: {
+        type: [{
+            user: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                required: true,
+            },
+            _id: false,
+        }],
+        default: [],
+    },
 }, {
     versionKey: false,
     timestamps: {

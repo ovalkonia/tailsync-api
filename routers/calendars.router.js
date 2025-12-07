@@ -17,6 +17,8 @@ calendars_router.get("/calendars/:calendar_id/events/all/:year", auth_middleware
 // POST
 
 calendars_router.post("/calendars", auth_middleware(), calendars_controller.post_calendar);
+calendars_router.post("/calendars/:calendar_id/share", auth_middleware(), calendar_fetch_middleware(), calendars_controller.post_calendar_share);
+calendars_router.post("/calendars/join/:token", auth_middleware(), calendars_controller.post_calendar_join);
 
 // PATCH
 
