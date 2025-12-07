@@ -11,7 +11,7 @@ export default (sub, field) => {
                 cb(null, path.join("public", "uploads", sub));
             },
             filename: (req, file, cb) => {
-                const id = req.user._id;
+                const id = req.user.id;
                 const timestamp = Date.now();
                 const extension = path.extname(file.originalname);
                 const name = `${id}-${timestamp}${extension}`;

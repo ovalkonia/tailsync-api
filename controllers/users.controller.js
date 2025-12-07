@@ -24,7 +24,7 @@ export default {
         });
     },
     patch_user: async (req, res) => {
-        await UserModel.findByIdAndUpdate(req.user._id, req.body);
+        await UserModel.findByIdAndUpdate(req.user.id, req.body);
 
         return res.json({
             status: "success",
@@ -35,7 +35,7 @@ export default {
         });
     },
     delete_user: async (req, res) => {
-        await UserModel.findByIdAndDelete(req.user._id);
+        await UserModel.findByIdAndDelete(req.user.id);
 
         return res.json({
             status: "success",

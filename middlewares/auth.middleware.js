@@ -19,7 +19,7 @@ export default () => {
             throw ApiError.UNAUTHORIZED();
         }
 
-        req.user = user_document.toJSON();
+        req.user = user_document.toClient();
 
         return next();
     };

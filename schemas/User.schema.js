@@ -83,9 +83,18 @@ UserSchema.pre(["updateOne", "updateMany", "findOneAndUpdate"], async function (
 
 // Instance methods
 
+UserSchema.methods.toClient = function () {
+    const client = this.toJSON();
+
+    client.id = client._id;
+    delete client._id;
+
+    return client;
+};
+
 UserSchema.methods.compare_password = async function (password) {
     return await bcrypt.compare(password, this.password);
-}
+};
 
 export default UserSchema;
 
