@@ -23,10 +23,19 @@ export default {
             case "task": model = TaskModel; break;
         }
 
+        let end = req.body.end;
+        if (!end) {
+            end = new Date(req.body.start);
+            end.setDate(end.getDate() + 1);
+            end.setHours(0, 0, 0, 0);
+            end.setTime(end.getTime() - 1);
+        }
+
         delete req.body.type;
         await model.create({
             ...req.body,
             owner: req.user.id,
+            end,
         });
 
         return res.json({
