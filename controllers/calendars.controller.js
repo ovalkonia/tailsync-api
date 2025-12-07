@@ -44,7 +44,6 @@ export default {
             title: holiday.name,
             description: "A holiday, you know, chill",
             start: holiday.date,
-            rrule: "",
             color: "#2ec27e",
             type: "Holiday",
             categories: holiday.types,
