@@ -156,5 +156,17 @@ export default {
             message: "Successfully deleted the calendar!",
         });
     },
+    delete_calendar_leave: async (req, res) => {
+        await CalendarModel.findByIdAndUpdate(req.calendar.id, {
+            $pull: {
+                members: { user: req.user.id },
+            },
+        });
+
+        return res.json({
+            status: "success",
+            message: "Successfully left the calendar",
+        });
+    }
 };
 

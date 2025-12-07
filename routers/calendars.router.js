@@ -27,6 +27,7 @@ calendars_router.patch("/calendars/:calendar_id", calendar_fetch_middleware(), a
 // DELETE
 
 calendars_router.delete("/calendars/:calendar_id", calendar_fetch_middleware(), auth_middleware(), calendars_controller.delete_calendar);
+calendars_router.delete("/calendars/:calendar_id/leave", calendar_fetch_middleware(), auth_middleware(), calendars_controller.delete_calendar_leave);
 
 export default calendars_router;
 
