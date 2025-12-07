@@ -71,9 +71,9 @@ export default {
         }
 
         let rrule;
-        if (req.event.rrule || req.body.rrule) {
+        if (req.event.rrule || ["yearly", "monthly", "weekly", "daily"].includes(req.body.rrule)) {
             let freq;
-            if (req.body.rrule) {
+            if (["yearly", "monthly", "weekly", "daily"].includes(req.body.rrule)) {
                 switch (req.body.rrule) {
                     case "yearly": freq = Rrule.RRule.YEARLY; break;
                     case "monthly": freq = Rrule.RRule.MONTHLY; break;
