@@ -97,7 +97,7 @@ export default {
     },
     post_calendar_share: async (req, res) => {
         if (req.user.email === req.body.email) {
-            throw ApiError.UNAUTHORIZED();
+            throw ApiError.FORBIDDEN();
         }
 
         const user_document = await UserModel.findOne({ email: req.body.email }).exec();
@@ -153,6 +153,10 @@ export default {
         });
     },
     patch_calendar: async (req, res) => {
+        if (!req.calendar.owner.equals(req.user.id)) {
+            throw ApiError.FORBIDDEN();
+        }
+
         await CalendarModel.findByIdAndUpdate(req.calendar.id, req.body);
 
         return res.json({
@@ -161,6 +165,11 @@ export default {
         });
     },
     delete_calendar: async (req, res) => {
+        if (!req.calendar.owner.equals(req.user.id) ||
+            req.calendar.type === "main") {
+            throw ApiError.FORBIDDEN();
+        }
+
         await CalendarModel.findByIdAndDelete(req.calendar.id);
 
         return res.json({

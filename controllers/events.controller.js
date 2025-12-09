@@ -1,7 +1,10 @@
 import Rrule from "rrule";
 
-import EventModel from "../models/Event.model.js";
+import ApiError from "../errors/Api.error.js";
+import CalendarError from "../errors/Calendar.error.js";
 import ArrangementModel from "../models/Arrangement.model.js";
+import CalendarModel from "../models/Calendar.model.js";
+import EventModel from "../models/Event.model.js";
 import ReminderModel from "../models/Reminder.model.js";
 import TaskModel from "../models/Task.model.js";
 
@@ -18,6 +21,20 @@ export default {
         });
     },
     post_event: async (req, res) => {
+        const calendar_id = req.body.calendar;
+        const calendar_document = await CalendarModel.findById(calendar_id);
+        if (!calendar_document) {
+            throw CalendarError.DOESNT_EXIST();
+        }
+
+        req.calendar = calendar_document.toClient();
+
+        const member = req.calendar.members.find(member => member.user.equals(req.user.id));
+        if (!req.calendar.owner.equals(req.user.id) &&
+            member?.role !== "contributor") {
+            throw ApiError.FORBIDDEN();
+        }
+
         let model;
         switch (req.body.type) {
             case "arrangement": model = ArrangementModel; break;
@@ -63,6 +80,33 @@ export default {
         });
     },
     patch_event: async (req, res) => {
+        const t_calendar_id = req.event.calendar;
+        const t_calendar_document = await CalendarModel.findById(t_calendar_id);
+        if (!t_calendar_document) {
+            throw CalendarError.DOESNT_EXIST();
+        }
+
+        req.calendar = t_calendar_document.toClient();
+        const t_member = req.calendar.members.find(member => member.user.equals(req.user.id));
+        console.log(t_member);
+        if (!req.calendar.owner.equals(req.user.id) &&
+            t_member?.role !== "contributor") {
+            throw ApiError.FORBIDDEN();
+        }
+
+        const calendar_id = req.event.calendar;
+        const calendar_document = await CalendarModel.findById(calendar_id);
+        if (!calendar_document) {
+            throw CalendarError.DOESNT_EXIST();
+        }
+
+        req.calendar = calendar_document.toClient();
+        const member = req.calendar.members.find(member => member.user.equals(req.user.id));
+        if (!req.calendar.owner.equals(req.user.id) &&
+            !req.event.owner.equals(req.user.id)) {
+            throw ApiError.FORBIDDEN();
+        }
+
         let model;
         switch (req.body.type) {
             case "arrangement": model = ArrangementModel; break;
@@ -108,6 +152,20 @@ export default {
         });
     },
     delete_event: async (req, res) => {
+        const calendar_id = req.event.calendar;
+        const calendar_document = await CalendarModel.findById(calendar_id);
+        if (!calendar_document) {
+            throw CalendarError.DOESNT_EXIST();
+        }
+
+        req.calendar = calendar_document.toClient();
+
+        const member = req.calendar.members.find(member => member.user.equals(req.user.id));
+        if (!req.calendar.owner.equals(req.user.id) &&
+            !req.event.owner.equals(req.user.id)) {
+            throw ApiError.FORBIDDEN();
+        }
+
         await EventModel.findByIdAndDelete(req.event.id);
 
         return res.json({
