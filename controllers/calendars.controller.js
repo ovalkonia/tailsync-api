@@ -108,12 +108,15 @@ export default {
         const calendar_join_token_util = CalendarJoinTokenUtil.issue(user_document.id, req.calendar.id, req.body.role);
         const calendar_join_token = calendar_join_token_util.sign();
 
+        const link = `${[process.env.URL_FRONTEND]}/calendars/join/${calendar_join_token}`;
+        console.log(`Shared: ${link}`);
+
         const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.send({
             from: process.env.RESEND_FROM,
             to: req.body.email,
             subject: "Join My Calendar!",
-            html: `Join <strong>${req.user.name}'s</strong> Calendar <strong>${req.calendar.title}</strong> <a href="${[process.env.URL_FRONTEND]}/calendars/join/${calendar_join_token}">here</a>`,
+            html: `Join <strong>${req.user.name}'s</strong> Calendar <strong>${req.calendar.title}</strong> <a href="${link}">here</a>`,
         });
 
         return res.json({
@@ -147,6 +150,15 @@ export default {
             },
         });
 
+        const owner_document = await UserModel.findById(req.calendar.owner);
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: process.env.RESEND_FROM,
+            to: owner_document.email,
+            subject: "Calendar Member Joined!",
+            html: `A new member <strong>${req.user.name}</strong> joined your calendar <strong>${req.calendar.title}</strong>`,
+        });
+
         return res.json({
             status: "success",
             message: "Successfully joined the calendar",
@@ -158,6 +170,22 @@ export default {
         }
 
         await CalendarModel.findByIdAndUpdate(req.calendar.id, req.body);
+
+        const owner_document = await UserModel.findById(req.calendar.owner);
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        for (const member of req.calendar.members) {
+            const user_document = await UserModel.findById(member.user);
+            if (!user_document) {
+                continue;
+            }
+
+            await resend.emails.send({
+                from: process.env.RESEND_FROM,
+                to: user_document.email,
+                subject: "Celendar Updated!",
+                html: `<strong>${owner_document.name}</strong>'s calendar <strong>${req.calendar.title}</strong> was updated`,
+            });
+        }
 
         return res.json({
             status: "success",
@@ -172,6 +200,22 @@ export default {
 
         await CalendarModel.findByIdAndDelete(req.calendar.id);
 
+        const owner_document = await UserModel.findById(req.calendar.owner);
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        for (const member of req.calendar.members) {
+            const user_document = await UserModel.findById(member.user);
+            if (!user_document) {
+                continue;
+            }
+
+            await resend.emails.send({
+                from: process.env.RESEND_FROM,
+                to: user_document.email,
+                subject: "Celendar Deleted!",
+                html: `<strong>${owner_document.name}</strong>'s calendar <strong>${req.calendar.title}</strong> was deleted`,
+            });
+        }
+
         return res.json({
             status: "success",
             message: "Successfully deleted the calendar!",
@@ -182,6 +226,15 @@ export default {
             $pull: {
                 members: { user: req.user.id },
             },
+        });
+
+        const owner_document = await UserModel.findById(req.calendar.owner);
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: process.env.RESEND_FROM,
+            to: owner_document.email,
+            subject: "Calendar Member Left!",
+            html: `Your calendar's <strong>${req.calendar.title}</strong> member <strong>${req.user.name}</strong> left`,
         });
 
         return res.json({
