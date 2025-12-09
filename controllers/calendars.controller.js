@@ -1,8 +1,10 @@
 import { Resend } from "resend";
 import ApiError from "../errors/Api.error.js";
 import CalendarError from "../errors/Calendar.error.js";
+import UserError from "../errors/User.error.js";
 import CalendarModel from "../models/Calendar.model.js";
 import EventModel from "../models/Event.model.js";
+import UserModel from "../models/User.model.js";
 import CalendarJoinTokenUtil from "../utils/CalendarJoinToken.util.js";
 
 export default {
@@ -11,13 +13,7 @@ export default {
             .find({
                 $or: [
                     { owner: req.user.id },
-                    {
-                        members: {
-                            $elemMatch: {
-                                user: req.user.id,
-                            },
-                        },
-                    },
+                    { "members.user": req.user.id },
                 ],
             }))
             .map(calendar => calendar.toClient());
@@ -100,7 +96,16 @@ export default {
         });
     },
     post_calendar_share: async (req, res) => {
-        const calendar_join_token_util = CalendarJoinTokenUtil.issue(req.user.id, req.calendar.id);
+        if (req.user.email === req.body.email) {
+            throw ApiError.UNAUTHORIZED();
+        }
+
+        const user_document = await UserModel.findOne({ email: req.body.email }).exec();
+        if (!user_document) {
+            throw UserError.DOESNT_EXIST();
+        }
+
+        const calendar_join_token_util = CalendarJoinTokenUtil.issue(user_document.id, req.calendar.id, req.body.role);
         const calendar_join_token = calendar_join_token_util.sign();
 
         const resend = new Resend(process.env.RESEND_API_KEY);
@@ -125,13 +130,20 @@ export default {
 
         req.calendar = calendar_document.toClient();
         if (!calendar_join_token_util.is_valid() ||
-            req.user.id.equals(req.calendar.owner)) {
-            throw ApiError.UNAUTHORIZED();
+            !req.user.id.equals(calendar_join_token_util.user_id)) {
+            throw ApiError.FORBIDDEN();
         }
 
-        await CalendarModel.findByIdAndUpdate(req.calendar.id, {
+        if (req.calendar.members.find(member => member.user.equals(calendar_join_token_util.user_id))) {
+            throw UserError.ALREADY_JOINED();
+        }
+
+        await CalendarModel.findByIdAndUpdate(calendar_join_token_util.calendar_id, {
             $push: {
-                members: { user: req.user.id },
+                members: {
+                    user: calendar_join_token_util.user_id,
+                    role: calendar_join_token_util.role,
+                },
             },
         });
 

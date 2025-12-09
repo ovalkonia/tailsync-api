@@ -33,6 +33,11 @@ const CalendarSchema = new Schema({
                 ref: "User",
                 required: true,
             },
+            role: {
+                type: Schema.Types.String,
+                required: true,
+                enum: ["viewer", "contributor"],
+            },
             _id: false,
         }],
         default: [],
